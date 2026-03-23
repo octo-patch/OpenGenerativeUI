@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: app
+    runtime: docker
+    dockerfilePath: apps/app/Dockerfile
+    dockerContext: .
+    plan: starter
+    envVars:
+      - key: LANGGRAPH_DEPLOYMENT_URL
+        fromService:
+          name: agent
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: LANGSMITH_API_KEY
+        sync: false
+      - key: PORT
+        value: "3000"
+
+  - type: web
+    name: agent
+    runtime: docker
+    dockerfilePath: apps/agent/Dockerfile
+    dockerContext: apps/agent
+    plan: starter
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: LANGSMITH_API_KEY
+        sync: false
