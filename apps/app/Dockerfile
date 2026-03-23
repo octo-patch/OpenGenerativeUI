@@ -22,10 +22,16 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Run as non-root user
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 --ingroup nodejs nextjs
+
 # Copy standalone build output
-COPY --from=builder /app/apps/app/.next/standalone ./
-COPY --from=builder /app/apps/app/.next/static ./apps/app/.next/static
-COPY --from=builder /app/apps/app/public ./apps/app/public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/apps/app/.next/static ./apps/app/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/app/public ./apps/app/public
+
+USER nextjs
 
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0

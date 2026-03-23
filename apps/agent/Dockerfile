@@ -2,8 +2,8 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install uv package manager
-RUN pip install uv
+# Install uv package manager (pinned version)
+RUN pip install uv==0.7.12
 
 # Copy dependency files first for layer caching
 COPY pyproject.toml uv.lock ./
@@ -22,6 +22,12 @@ RUN sed -i 's|"env": "../../.env"|"env": ".env"|' langgraph.json
 
 # Create empty .env so langgraph doesn't error (secrets come from Render env vars)
 RUN touch .env
+
+# Run as non-root user
+RUN addgroup --system --gid 1001 appuser && \
+    adduser --system --uid 1001 --ingroup appuser appuser && \
+    chown -R appuser:appuser /app
+USER appuser
 
 ENV PORT=8123
 

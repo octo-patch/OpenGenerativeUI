@@ -16,6 +16,9 @@ services:
       - key: PORT
         value: "3000"
 
+  # NOTE: This agent is publicly accessible. For production, consider switching
+  # to a private service (type: pserv) and setting LANGGRAPH_DEPLOYMENT_URL
+  # manually using the internal hostname: http://<RENDER_INTERNAL_HOSTNAME>:8123
   - type: web
     name: agent
     runtime: docker
